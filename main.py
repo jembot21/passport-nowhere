@@ -1,7 +1,19 @@
 """An offline, deterministic passport study. Requires only Pillow."""
 from pathlib import Path
 import math
-from PIL import Image, ImageDraw, ImageFont
+try:
+    from PIL import Image, ImageDraw, ImageFont
+except ImportError:
+    import sys
+    import tempfile
+    import zipfile
+
+    _pillow_temp = tempfile.TemporaryDirectory(prefix='passport-pillow-')
+    _pillow_wheel = next(Path(__file__).resolve().parent.glob('pillow-*.whl'))
+    with zipfile.ZipFile(_pillow_wheel) as _wheel:
+        _wheel.extractall(_pillow_temp.name)
+    sys.path.insert(0, _pillow_temp.name)
+    from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parent
 S = 3
